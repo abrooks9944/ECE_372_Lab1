@@ -60,7 +60,7 @@ void __ISR(_TIMER_1_VECTOR, IPL7SRS) _T1Interrupt(void) {
 }
 
 void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void) {
-    IFS1bits.CNDIF = 0;
+    IFS1bits.CNAIF = 0;
     int x;
     x = PORTA; // clearing the mismatch condition
 

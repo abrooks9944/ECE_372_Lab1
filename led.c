@@ -18,14 +18,17 @@
 #define LATCH 0
 #define PORT 1
 
+#define ON 0
+#define OFF 1
+
 void initLEDs(){    
     RUN_TRIS  = 0;
     STOP_TRIS = 0;       
 }
 
 void preSetLEDs(){ //turn on the running LED, turn off the other
-    RUN_LED = 1;
-    STOP_LED = 0;
+    RUN_LED = ON;
+    STOP_LED = OFF;
 }
 
 
