@@ -18,7 +18,7 @@ void delayTimer1(){ //DELAYS FOR 1 SECOND
     T1CONbits.TON = 0; // Turn off the timer
 }
 
-void delayus(int usec)
+void delayUs(int usec)
 {
     TMR1 = 0;
     PR1 = calculatePR(usec); // .05 Seconds

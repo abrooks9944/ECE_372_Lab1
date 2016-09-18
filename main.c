@@ -6,6 +6,13 @@
  * Created on September 15, 2016
  */
 
+/***************************************************************************
+ *                           Part 1 <working>                              *
+ ***************************************************************************/
+
+
+
+/*
 #include <xc.h>
 #include <sys/attribs.h>
 #include <proc/p32mx470f512l.h>
@@ -17,7 +24,7 @@
 #define OUTPUT 0
 #define INPUT 1
 
-typedef enum stateEnum {
+typedef enum stateEnum { //all states are for debouncing; states handle LEDs.
     waitPress,
     waitRelease,
     debouncePress,
@@ -63,7 +70,7 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void) {
     IFS1bits.CNAIF = 0;
     int x;
     x = PORTA; // clearing the mismatch condition
-
+   //debounce the button. 
     if (state == waitPress) {
         state = debouncePress;
     } 
@@ -71,3 +78,64 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void) {
         state = debounceRelease;
     }
 }
+ * 
+ */
+
+
+
+/***************************************************************************
+ *                           Part 2 <to be tested>                         *
+ ***************************************************************************/
+#include <xc.h>
+#include <sys/attribs.h>
+#include <proc/p32mx470f512l.h>
+#include "timer.h"
+#include "led.h"
+#include "interrupt.h"
+#include "config.h"
+#include "switch.h"
+#define OUTPUT 0
+#define INPUT 1
+
+typedef enum stateEnum {
+    waitPress,
+    waitRelease,
+    debouncePress,
+    debounceRelease     
+} stateType;
+
+volatile stateType state = waitPress;
+
+
+void main() {
+    SYSTEMConfigPerformance(10000000); //Important for stability
+    enableInterrupts();
+    initLCD();
+
+    while (1) {
+        //switch (state) {
+            /*case waitPress:
+                break;
+            case debouncePress:
+                delayTimer1(); //debounce by .05 seconds
+                state = waitRelease;
+                break;
+            case waitRelease:
+                break;
+            case debounceRelease:
+                delayTimer1(); //debounce by .05 seconds
+                toggleLEDs(); //flip the LEDs
+                state = waitPress;                
+                break;
+                }*/
+            testLCD(); //replace with states once this is working.
+        
+    }
+}
+
+
+
+
+/***************************************************************************
+ *                           Part 3 <to be tested>                         *
+ ***************************************************************************/
