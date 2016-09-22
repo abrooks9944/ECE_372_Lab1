@@ -25,15 +25,19 @@
 
 //<<<<all data values just given to shut up warnings. Assign actual reg values later.>>>>
 #define LCD_DATA  1
-#define LCD_RS  1
-#define LCD_E   1
+#define LCD_RS  TRISCbits.TRISC4
+#define LCD_E   TRISCbits.TRISC2
 
-#define TRIS_D7 1
-#define TRIS_D6 1
-#define TRIS_D5 1
-#define TRIS_D4 1
-#define TRIS_RS 1
-#define TRIS_E  1
+#define TRIS_D7 TRISEbits.TRISE1
+#define TRIS_D6 TRISEbits.TRISE3
+#define TRIS_D5 TRISEbits.TRISE5
+#define TRIS_D4 TRISEbits.TRISE7
+
+#define LCD_D7 LATEbits.LATE1
+#define LCD_D6 LATEbits.LATE3
+#define LCD_D5 LATEbits.LATE5
+#define LCD_D4 LATEbits.LATE7
+
 
 #define LCD_COMMAND 0
 #define LCD_DATA 1
@@ -93,16 +97,16 @@ void writeLCD(unsigned char word, unsigned int commandType, unsigned int delayAf
 void writeFourBits(unsigned char word, unsigned int commandType, unsigned int delayAfter, unsigned int lower){
     LCD_RS = commandType == LCD_DATA ? 1 : 0; //only enable LCD_RD if commandType is LCD_DATA.
     if(lower){
-        LATDbits.LATD0 = word & 0x01; //aka LATDbits.LARTx = (word & F0)
-        LATDbits.LATD1 = (word & 0x02) >> 1;
-        LATDbits.LATD2 = (word & 0x04) >> 2;
-        LATDbits.LATD3 = (word & 0x08) >> 3;        
+        LCD_D4 = word & 0x01; //aka LATDbits.LARTx = (word & F0)
+        LCD_D5 = (word & 0x02) >> 1;
+        LCD_D6 = (word & 0x04) >> 2;
+        LCD_D7 = (word & 0x08) >> 3;        
     }
     else{
-        LATDbits.LATD0 = (word & 0x10) >> 4; // aka LATDbits.LATDx = (word & F0) >> 4
-        LATDbits.LATD1 = (word & 0x20) >> 5;
-        LATDbits.LATD2 = (word & 0x40) >> 6;
-        LATDbits.LATD3 = (word & 0x80) >> 7;                
+        LCD_D4 = (word & 0x10) >> 4; // aka LATDbits.LATDx = (word & F0) >> 4
+        LCD_D5 = (word & 0x20) >> 5;
+        LCD_D6 = (word & 0x40) >> 6;
+        LCD_D7 = (word & 0x80) >> 7;                
     }
     
     delayUs(delayAfter);
@@ -123,8 +127,8 @@ void initLCD(void) {
     TRIS_D6 = OUTPUT;
     TRIS_D5 = OUTPUT;
     TRIS_D4 = OUTPUT;
-    TRIS_RS = OUTPUT;
-    TRIS_E = OUTPUT;
+    LCD_RS = OUTPUT;
+    LCD_E = OUTPUT;
     
     //MAKE ANALOG IF NEEDED. CHECK IF ANY OF THE PINS USED ARE ANSELx REGISTERS!
     //NOTE: MINIMUM DELAY IS 40 USEC!
