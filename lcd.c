@@ -68,7 +68,7 @@ void printStringLCD(const char* s) {
 /* Given a character, write it to the LCD. RS should be set to the appropriate value.
  */
 void printCharLCD(char c) {
-    writeLCD(c, LCD_DATA, 50); //SET RS to LCD_DATA, or 1.
+    writeLCD(c, LCD_DATA, 40); //SET RS to LCD_DATA, or 1.
 }
 
 
@@ -77,9 +77,8 @@ void printCharLCD(char c) {
  * to the LCD.
  */
 void writeLCD(unsigned char word, unsigned int commandType, unsigned int delayAfter){
-    //PRETTY SURE WE DO NOT NEED TO DELAY AFTER THE FIRST OF THESE SINCE THE COMMANDS ARE WORTHLESS WITHOUT THE ENTIRE BIT STRING.
-    writeFourBits(word, commandType, 0, LOWER); // Send lower 4 bits
-    writeFourBits(word, commandType, delayAfter, UPPER); // send upper four bits & delay after the write.
+    writeFourBits(word, commandType, delayAfter, UPPER); // Send upper 4 bits
+    writeFourBits(word, commandType, delayAfter, LOWER); // send lower four bits & delay after the write.
 }
    
 
@@ -118,6 +117,8 @@ void writeFourBits(unsigned char word, unsigned int commandType, unsigned int de
  */
 void initLCD(void) {
     // Setup D, RS, and E to be outputs (0).
+    
+    
     TRIS_D7 = OUTPUT; 
     TRIS_D6 = OUTPUT;
     TRIS_D5 = OUTPUT;
@@ -132,26 +133,28 @@ void initLCD(void) {
     // delay 15 milliseconds
     delayUs(15000);
     
-    writeFourBits(0x00, LCD_COMMAND, 0, UPPER); //make sure that the top bits are zeroed out.
-    writeFourBits(0x03, LCD_COMMAND, 4100, LOWER); // delay 4100 microseconds = 4.1 milliseconds
-
-    writeFourBits(0x03, LCD_COMMAND, 100, LOWER);
+    writeFourBits(0x03, LCD_COMMAND, 40, LOWER); // delay 4100 microseconds = 4.1 milliseconds
+    delayUs(4100);
+    
+    writeFourBits(0x03, LCD_COMMAND, 40, LOWER);
+    delayUs(100);
     
     writeFourBits(0x03, LCD_COMMAND, 40, LOWER); 
 
     //Function set: 4 bit starts right below this comment.
     writeFourBits(0x02, LCD_COMMAND, 40, LOWER);
     
-    writeFourBits(0x02, LCD_COMMAND, 40, LOWER); //function set operations.
+    writeFourBits(0x02, LCD_COMMAND, 40, UPPER); //function set operations. 0x28? fix.
     writeFourBits(0x08, LCD_COMMAND, 40, LOWER); 
 
-    writeFourBits(0x00, LCD_COMMAND, 40, LOWER);
+    writeFourBits(0x00, LCD_COMMAND, 40, UPPER);
     writeFourBits(0x08, LCD_COMMAND, 40, LOWER);//display off
 
-    writeFourBits(0x00, LCD_COMMAND, 40, LOWER);
-    writeFourBits(0x01, LCD_COMMAND, 1640, LOWER); //clear display. Lag ~1.64 ms before moving on.
+    writeFourBits(0x00, LCD_COMMAND, 40, UPPER); //needed?
+    writeFourBits(0x01, LCD_COMMAND, 40, LOWER); //clear display. Lag ~1.64 ms before moving on.
+    delayUs(1640); //delay for the clear.
     
-    writeFourBits(0x00, LCD_COMMAND, 40, LOWER);
+    writeFourBits(0x00, LCD_COMMAND, 40, UPPER); //needed?
     writeFourBits(0x06, LCD_COMMAND, 40, LOWER); //entry mode set. Increment display, no shift.
     
     writeFourBits(0x0C, LCD_COMMAND, 40, LOWER); //turn the display on, cursor off, blink off
@@ -176,9 +179,10 @@ void moveCursorLCD(unsigned char x, unsigned char y){
     //REMEMBER, THIS IS ALL HEXIDECIMAL
     //x: 0 -> top row, 1 -> bottom row
     //y: # of spaces over from the left (IE 0 is the leftmost, 1 is one space from the left, etc)
-    unsigned char addr = ((4 * x) << 4) + y; //see memory table. 0 -> 0x0<y>, 1 -> 0x4<y>, so to set the left digit in hex
+    unsigned char addr = 0x80 + ((0x04 * x) << 4) + y; //see memory table. 0 -> 0x0<y>, 1 -> 0x4<y>, so to set the left digit in hex
     // we multiply it by 4, and shift left by four bits. y is indexed 0, 1, ..., 7, so we do NOT need to shift this.
-    writeLCD(addr, LCD_DATA, 40); //RS must be one for this command (see data sheet)).
+    writeLCD(addr, LCD_COMMAND, 40); //RS must be zero for this command (see data sheet)).
+
 }
 
 /*
