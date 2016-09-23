@@ -147,17 +147,22 @@ void initLCD(void) {
 
     //Function set: 4 bit starts right below this comment.
     writeFourBits(0x02, LCD_COMMAND, 40, LOWER);
-    
+
+    //writeLCD(0x28, LCD_COMMAND, 40);    
     writeFourBits(0x02, LCD_COMMAND, 40, UPPER); //function set operations. 0x28? fix.
     writeFourBits(0x08, LCD_COMMAND, 40, LOWER); 
 
+    
+    //writeLCD(0x08, LCD_COMMAND, 40);
     writeFourBits(0x00, LCD_COMMAND, 40, UPPER);
     writeFourBits(0x08, LCD_COMMAND, 40, LOWER);//display off
 
+    //writeLCD(0x01, LCD_COMMAND, 40);
     writeFourBits(0x00, LCD_COMMAND, 40, UPPER); //needed?
     writeFourBits(0x01, LCD_COMMAND, 40, LOWER); //clear display. Lag ~1.64 ms before moving on.
     delayUs(1640); //delay for the clear.
-    
+
+    //writeLCD(0x06, LCD_COMMAND, 40);    
     writeFourBits(0x00, LCD_COMMAND, 40, UPPER); //needed?
     writeFourBits(0x06, LCD_COMMAND, 40, LOWER); //entry mode set. Increment display, no shift.
     
@@ -183,7 +188,7 @@ void moveCursorLCD(unsigned char x, unsigned char y){
     //REMEMBER, THIS IS ALL HEXIDECIMAL
     //x: 0 -> top row, 1 -> bottom row
     //y: # of spaces over from the left (IE 0 is the leftmost, 1 is one space from the left, etc)
-    unsigned char addr = 0x80 + ((0x04 * x) << 4) + y; //see memory table. 0 -> 0x0<y>, 1 -> 0x4<y>, so to set the left digit in hex
+    unsigned char addr = 0x80 + (0x40 * x) + y; //see memory table. 0 -> 0x0<y>, 1 -> 0x4<y>, so to set the left digit in hex
     // we multiply it by 4, and shift left by four bits. y is indexed 0, 1, ..., 7, so we do NOT need to shift this.
     writeLCD(addr, LCD_COMMAND, 40); //RS must be zero for this command (see data sheet)).
 

@@ -13,5 +13,6 @@ void initTimer1_half();
 void delayOneSecondTimer2();
 void delayTenthSecondTimer2();
 void delayUs(int usec);
+char* updateTime(char* currentTime);
 #endif	/* TIMER_H */
 
